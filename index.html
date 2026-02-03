@@ -1,0 +1,194 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>给最可爱的你</title>
+    <style>
+        body {
+            background-color: #ffeef2;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 100vh;
+            margin: 0;
+            font-family: "PingFang SC", "Microsoft YaHei", sans-serif;
+            overflow: hidden;
+            transition: background-color 0.5s;
+        }
+
+        .container {
+            text-align: center;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 25px 20px;
+            border-radius: 25px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.05);
+            width: 80%;
+            max-width: 300px; /* 缩小了容器宽度 */
+            position: relative;
+            z-index: 10;
+        }
+
+        @keyframes shake {
+            0% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            50% { transform: translateX(5px); }
+            75% { transform: translateX(-5px); }
+            100% { transform: translateX(0); }
+        }
+        .shake { animation: shake 0.3s ease-in-out; }
+
+        .bear-box {
+            width: 150px; /* 缩小了图片尺寸 */
+            height: 150px;
+            margin: 0 auto 15px;
+        }
+
+        .bear-box img {
+            width: 100%;
+            height: 100%;
+            object-fit: contain;
+        }
+
+        h2 {
+            color: #d6336c;
+            font-size: 1.1rem;
+            margin-bottom: 25px;
+            min-height: 2.5rem;
+            line-height: 1.4;
+        }
+
+        .buttons {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+            width: 100%;
+        }
+
+        .btn {
+            width: 80%; /* 按钮宽度更适中 */
+            padding: 12px 0;
+            border-radius: 50px;
+            border: none;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-weight: bold;
+        }
+
+        #btn-yes {
+            background-color: #78e08f;
+            color: white;
+            order: 1;
+            box-shadow: 0 4px 10px rgba(120, 224, 143, 0.3);
+        }
+
+        #btn-no {
+            background-color: #ff7675;
+            color: white;
+            order: 2;
+            font-size: 0.85rem;
+            opacity: 0.8;
+        }
+
+        .heart {
+            position: fixed;
+            top: -20px;
+            font-size: 25px;
+            user-select: none;
+            z-index: 1000;
+            animation: fall linear forwards;
+        }
+        @keyframes fall {
+            to { transform: translateY(110vh) rotate(360deg); }
+        }
+    </style>
+</head>
+<body>
+
+<div class="container" id="main-card">
+    <div class="bear-box">
+        <img id="bear-img" src="1.png" alt="小熊">
+    </div>
+    <h2 id="text-content">宝宝，原谅布布好不好？</h2>
+    
+    <div class="buttons">
+        <button class="btn" id="btn-yes">原谅</button>
+        <button class="btn" id="btn-no">不原谅</button>
+    </div>
+</div>
+
+<script>
+    const bearImg = document.getElementById('bear-img');
+    const textContent = document.getElementById('text-content');
+    const btnYes = document.getElementById('btn-yes');
+    const btnNo = document.getElementById('btn-no');
+    const card = document.getElementById('main-card');
+
+    let clickCount = 0;
+    let yesScale = 1;
+    let yesFontSize = 1;
+
+    const scenarios = [
+        { text: "真的不肯原谅布布吗？呜呜", img: "2.png" },
+        { text: "布布知道错了，再给一次机会嘛...", img: "3.png" },
+        { text: "一二，求求你了，求求你了嘛~", img: "4.png" },
+        { text: "你真的不要布布了吗...心碎", img: "5.png" },
+        { text: "这下只有一个选项啦！（耍赖）", img: "6.png" }
+    ];
+
+    btnNo.addEventListener('click', () => {
+        if (clickCount < scenarios.length) {
+            textContent.innerText = scenarios[clickCount].text;
+            bearImg.src = scenarios[clickCount].img;
+
+            // 限制最大缩放倍数，防止超出屏幕
+            if (yesScale < 1.6) { 
+                yesScale += 0.15; // 每次缩放幅度减小，更细腻
+                yesFontSize += 0.1;
+                btnYes.style.transform = `scale(${yesScale})`;
+                // 同时稍微增加一点内边距，让它看起来更大但更有质感
+                btnYes.style.padding = `${12 + clickCount * 2}px 0`;
+            }
+
+            card.classList.remove('shake');
+            void card.offsetWidth; 
+            card.classList.add('shake');
+
+            const darkValue = 255 - (clickCount * 15);
+            document.body.style.backgroundColor = `rgb(${darkValue}, ${darkValue - 15}, ${darkValue - 10})`;
+
+            if (clickCount === scenarios.length - 1) {
+                btnNo.style.display = 'none';
+                btnYes.style.width = '100%'; // 最后撑满容器宽度
+            }
+            clickCount++;
+        }
+    });
+
+    btnYes.addEventListener('click', () => {
+        textContent.innerText = "耶！布布就知道你最好啦！爱你！❤️";
+        bearImg.src = "7.png";
+        btnNo.style.display = 'none';
+        btnYes.style.display = 'none';
+        document.body.style.backgroundColor = "#ffeef2"; 
+
+        for (let i = 0; i < 40; i++) {
+            setTimeout(createHeart, i * 150);
+        }
+    });
+
+    function createHeart() {
+        const heart = document.createElement('div');
+        heart.classList.add('heart');
+        heart.innerHTML = ['❤️','💖','💗','💕','🌸','🍭'][Math.floor(Math.random()*6)];
+        heart.style.left = Math.random() * 100 + 'vw';
+        heart.style.animationDuration = Math.random() * 2 + 3 + 's';
+        document.body.appendChild(heart);
+        setTimeout(() => heart.remove(), 5000);
+    }
+</script>
+
+</body>
+</html>
